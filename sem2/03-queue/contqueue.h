@@ -25,9 +25,9 @@ Queue* queue_copy(Queue* dst, const Queue* src); // copy queue
 Queue* queue_merge(Queue* dst, const Queue* src); // merge queues into one
 
 // Iterator 
-void iter_begin(const Queue* q);
+void iter_begin(Iterator* iter, const Queue* q);
 void iter_next(Iterator* iter);
-void iter_end(const Queue* q);
+void iter_end(Iterator* iter, const Queue* q);
 
 void* iter_get(const Iterator* it); // get current element
 _Bool iter_belongs_at(const Iterator* iter, const Queue* q); //if iterator points at q
