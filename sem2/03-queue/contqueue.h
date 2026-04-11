@@ -16,7 +16,7 @@ void* dequeue(Queue* q); // get from queue and remove
 // Grade "Good"
 _Bool queue_empty(const Queue* q); // true if queue is empty
 size_t queue_size(const Queue* q); // get size
-void* queue_peek(const Qeueu* q); // check the first from queue 
+void* queue_peek(const Queue* q); // check the first from queue 
 void queue_clear(Queue* q); // clear queue 
 
 // Grade "Excellent"
@@ -29,7 +29,7 @@ void iter_begin(Iterator* iter, const Queue* q);
 void iter_next(Iterator* iter);
 void iter_end(Iterator* iter, const Queue* q);
 
-void* iter_get(const Iterator* it); // get current element
+void* iter_get(const Iterator* iter); // get current element
 _Bool iter_belongs_at(const Iterator* iter, const Queue* q); //if iterator points at q
 _Bool iter_equal(const Iterator* iter1, const Iterator* iter2); // if iterators equel
 
