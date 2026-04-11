@@ -109,10 +109,10 @@ void* dequeue(Queue* q) {
   return data;
 }
 
-// Grade "Good"
-
 // true if queue is empty
 _Bool queue_empty(const Queue* q) {return q->size == 0;}
+
+// Grade "Good"
 
 // get size
 size_t queue_size(const Queue* q) {return q->size;}

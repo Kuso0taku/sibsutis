@@ -31,9 +31,9 @@ void queue_free(Queue* q); // free memory
                            
 void enqueue(Queue* q, void* data); // add to queue 
 void* dequeue(Queue* q); // get from queue and remove
+_Bool queue_empty(const Queue* q); // true if queue is empty
 
 // Grade "Good"
-_Bool queue_empty(const Queue* q); // true if queue is empty
 size_t queue_size(const Queue* q); // get size
 void* queue_peek(const Queue* q); // check the first from queue 
 void queue_clear(Queue* q); // clear queue 
