@@ -3,8 +3,27 @@
 
 #include <stddef.h> // size_t
 
-typedef struct Queue Queue;
-typedef struct Iterator Iterator;
+// queue node
+typedef struct Node {
+  void* data;
+  struct Node* next;
+} Node;
+
+// queue structure
+typedef struct {
+  Node* front;      // first element 
+  Node* rear;       // last element 
+  size_t size;      // nubmer of elements 
+  size_t capacity;  // all alocated nodes 
+  Node* pool;       // free nodes stack 
+} Queue;
+
+// iterator structure
+typedef struct {
+  const Queue* queue; // points at this queue
+  Node* current;      // current node
+} Iterator;
+
 
 // Grade "Satisfactory"
 Queue* queue_create(void); // alloc memory
@@ -22,7 +41,7 @@ void queue_clear(Queue* q); // clear queue
 // Grade "Excellent"
 void frenqueue(Queue* q, void* data); // add to the beggining
 Queue* queue_copy(Queue* dst, const Queue* src); // copy queue 
-Queue* queue_merge(Queue* dst, const Queue* src); // merge queues into one
+Queue* queue_merge(Queue* dst, Queue* src); // merge queues into one
 
 // Iterator 
 void iter_begin(Iterator* iter, const Queue* q);

@@ -5,27 +5,6 @@
 #define INIT_CAPACITY 4 // may be any 
 #define GROWTH sqrt(2) // growth factor for memory backup
 
-// queue node
-typedef struct Node {
-  void* data;
-  struct Node* next;
-} Node;
-
-// queue structure
-struct Queue {
-  Node* front;      // first element 
-  Node* rear;       // last element 
-  size_t size;      // nubmer of elements 
-  size_t capacity;  // all alocated nodes 
-  Node* pool;       // free nodes stack 
-};
-
-// iterator structure
-struct Iterator {
-  const Queue* queue; // points at this queue
-  Node* current;      // current node
-};
-
 // some static functions (for internal needs)
 
 // count free nodes
@@ -179,14 +158,24 @@ Queue* queue_copy(Queue* dst, const Queue* src) {
 }
 
 // merge queues into one
-Queue* queue_merge(Queue* dst, const Queue* src) {
-  if (!dst) return NULL;
+Queue* queue_merge(Queue* dst, Queue* src) {
+  if (!dst || !src) return NULL;
+  if (queue_empty(src)) return dst;
 
-  Node* cur = src->front;
-  while (cur) {
-    enqueue(dst, cur->data);
-    cur = cur->next;
+  if (queue_empty(dst)) {
+    dst->front = src->front;
+    dst->rear = src->rear;
+    dst->size = src->size;
+  } else {
+    dst->rear->next = src->front;
+    dst->rear = src->rear;
+    dst->size += src->size;
   }
+  
+  src->front = NULL;
+  src->rear = NULL;
+  src->size = 0;
+
   return dst;
 }
 
