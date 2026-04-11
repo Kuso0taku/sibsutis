@@ -7,7 +7,7 @@ typedef struct Queue Queue;
 typedef struct Iterator Iterator;
 
 // Grade "Satisfactory"
-Queue* create_queue(void); // alloc memory
+Queue* queue_create(void); // alloc memory
 void queue_free(Queue* q); // free memory
                            
 void enqueue(Queue* q, void* data); // add to queue 
