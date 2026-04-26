@@ -62,8 +62,8 @@ int main() {
   print_int_queue(q_int);
   
   // free memory
-  queue_clear(q_int_cp);
-  queue_clear(q_int);
+  queue_free(q_int_cp);
+  queue_free(q_int);
   free(nums);
 
   return 0;
