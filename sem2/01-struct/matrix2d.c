@@ -12,6 +12,12 @@ Matrix2D *matrix2d_construct_default() {
 }
 
 Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const float* arr) {
+  if (!arr) {
+    matrix->rows = n;
+    matrix->cols = m;
+    matrix->arr = NULL;
+    return matrix;
+  }
   if (matrix->rows * matrix->cols != n*m) {
     free(matrix->data);
     matrix->data = (float*)malloc(n*m * sizeof(float));
