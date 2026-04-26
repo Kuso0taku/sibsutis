@@ -5,6 +5,15 @@
 #include <01-struct/matrix2d.h>
 #include <stddef.h> // size_t
 
+// for generators
+#define MAX 100
+#define MIN -100
+
+// additional
+static inline int get_rand_int(int min, int max) 
+  return (int)rand() / (RAND_MAX + 1.0) * (max - min) + min;
+
+
 // Grade "Satisfactory"
 Matrix2d* rand_gen_matrix2d(size_t);
 int save_queue_to(const Queue*, const char*);
