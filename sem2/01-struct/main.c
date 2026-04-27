@@ -14,7 +14,7 @@ int main() {
   size_t matrix_choice = 1;
   
   wint_t code = 0;
-  fputws(L"This is an app for testing work with (float) matrices.\n\n", stdout);
+  fputws(L"This is an app for testing work with (double) matrices.\n\n", stdout);
   do {
     fputws(L"Choose what to do:\n", stdout);
     fputws(L"(1)  Compare two matrices\n", stdout);
@@ -141,7 +141,7 @@ int main() {
           case 2: matrix2d_decrement(active_matrix); break;
           case 3:
             size_t row=0, col=0;
-            float value=0;
+            double value=0;
 
             wprintf(L"Enter the row INDEX of the element to change: ");
             while ((code = wscanf(L"%zu", &row))!=1 || row>active_matrix->rows) {
@@ -192,7 +192,7 @@ int main() {
           break;
         }
 
-        float min=0, max=0;
+        double min=0, max=0;
 
         wprintf(L"Enter the minimal value of random number: ");
         while ((code = wscanf(L"%f", &min))!=1) {

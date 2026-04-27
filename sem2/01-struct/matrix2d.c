@@ -11,7 +11,7 @@ Matrix2D *matrix2d_construct_default() {
   return matrix;
 }
 
-Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const float* arr) {
+Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const double* arr) {
   if (!arr) {
     matrix->rows = n;
     matrix->cols = m;
@@ -20,9 +20,9 @@ Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const float* 
   }
   if (matrix->rows * matrix->cols != n*m) {
     free(matrix->data);
-    matrix->data = (float*)malloc(n*m * sizeof(float));
+    matrix->data = (double*)malloc(n*m * sizeof(double));
   }
-  memcpy(matrix->data, arr, sizeof(float)*n*m);
+  memcpy(matrix->data, arr, sizeof(double)*n*m);
   matrix->rows = n;
   matrix->cols = m;
   return matrix;
@@ -32,9 +32,9 @@ Matrix2D *matrix2d_construct_copy(Matrix2D* dst, Matrix2D* src) {
   if (src->data == NULL) dst->data = NULL;
   if (dst->rows * dst->cols != src->rows * src->cols) {
     free(dst->data);
-    dst->data = (float*)malloc(src->rows * src->cols * sizeof(float));
+    dst->data = (double*)malloc(src->rows * src->cols * sizeof(double));
   }
-  memcpy(dst->data, src->data, sizeof(float) * src->rows * src->cols);
+  memcpy(dst->data, src->data, sizeof(double) * src->rows * src->cols);
   dst->rows = src->rows;
   dst->cols = src->cols;
   return dst;
@@ -89,7 +89,7 @@ wint_t matrix2d_wscanf(Matrix2D* matrix) {
     wprintf(L"Invalid input! Try again: ");
   }
 
-  float* arr = (float*)malloc(n*m * sizeof(float));
+  double* arr = (double*)malloc(n*m * sizeof(double));
   wprintf(L"Enter %zu elements of matrix here:\n", n*m);
   for (size_t i=0; i<n*m; i++) {
     wprintf(L"Element [%zu][%zu]: ", i/m, i%m);
@@ -133,19 +133,19 @@ void matrix2d_decrement(Matrix2D* matrix) {
   for (size_t i=0; i < matrix->rows * matrix->cols; i++) (*(matrix->data+i))--;
 }
 
-void matrix2d_setter(Matrix2D* matrix, size_t row, size_t col, float value) {
+void matrix2d_setter(Matrix2D* matrix, size_t row, size_t col, double value) {
   *(matrix->data + row * matrix->cols + col) = value;
 }
 
-void matrix2d_random(Matrix2D* matrix, float min, float max) {
+void matrix2d_random(Matrix2D* matrix, double min, double max) {
   srand(time(NULL)); // make seed for random number
   for (size_t i=0; i < matrix->rows * matrix->cols; i++) 
-       *(matrix->data+i) = min + (float)rand() / RAND_MAX * (max-min);
+       *(matrix->data+i) = min + (double)rand() / RAND_MAX * (max-min);
 }
 
 // grade "Good"
 Matrix2D* matrix2d_get_row(Matrix2D* matrix, size_t row) {
-  float *arr = (float*)malloc(matrix->cols * sizeof(float));
+  double *arr = (double*)malloc(matrix->cols * sizeof(double));
   for (size_t i=0; i < matrix->cols; i++) {
     *(arr+i) = *(matrix->data + matrix->cols * row + i);
   }
@@ -158,7 +158,7 @@ Matrix2D* matrix2d_get_row(Matrix2D* matrix, size_t row) {
 }
 
 Matrix2D* matrix2d_get_col(Matrix2D* matrix, size_t col) {
-  float *arr = (float*)malloc(matrix->rows * sizeof(float));
+  double *arr = (double*)malloc(matrix->rows * sizeof(double));
   for (size_t i=0; i < matrix->rows; i++) {
     *(arr+i) = *(matrix->data + i * matrix->cols + col);
   }
@@ -171,7 +171,7 @@ Matrix2D* matrix2d_get_col(Matrix2D* matrix, size_t col) {
 }
 
 Matrix2D* matrix2d_transpose(Matrix2D* matrix) {
-  float *sub = (float*)malloc(matrix->rows * matrix->cols * sizeof(float));
+  double *sub = (double*)malloc(matrix->rows * matrix->cols * sizeof(double));
 
   for (size_t i=0; i<matrix->rows; i++) {
     for (size_t j=0; j<matrix->cols; j++) {
@@ -186,17 +186,17 @@ Matrix2D* matrix2d_transpose(Matrix2D* matrix) {
   return result;
 }
 
-float matrix2d_determinant(Matrix2D* matrix) {
+double matrix2d_determinant(Matrix2D* matrix) {
   if (matrix->rows != matrix->cols) return 0;
   return _determinant(matrix->data, matrix->rows);
 }
 
-float _determinant(const float *data, size_t n) {
+double _determinant(const double *data, size_t n) {
   if (n == 1) return *(data);
   if (n == 2) return *(data) * *(data+3) - *(data+1) * *(data+2);
 
-  float det = 0, sign=1;
-  float* minor = NULL;
+  double det = 0, sign=1;
+  double* minor = NULL;
   
   for (size_t j=0; j < n; j++) {
     minor = matrix2d_minor(data, n, 0, j);
@@ -210,9 +210,9 @@ float _determinant(const float *data, size_t n) {
   return det;
 }
 
-float* matrix2d_minor(const float* data, size_t n, size_t row, size_t col) {
+double* matrix2d_minor(const double* data, size_t n, size_t row, size_t col) {
   if (n==1) return NULL;
-  float *minor = (float*)malloc((n-1)*(n-1) * sizeof(float));
+  double *minor = (double*)malloc((n-1)*(n-1) * sizeof(double));
   if (!minor) return NULL;
   size_t idx=0;
   for (size_t i=0; i < n; i++) {
@@ -226,7 +226,7 @@ float* matrix2d_minor(const float* data, size_t n, size_t row, size_t col) {
 }
 
 // grade "Excellent"
-Matrix2D* matrix2d_scale(Matrix2D* matrix, const float num) {
+Matrix2D* matrix2d_scale(Matrix2D* matrix, const double num) {
   for (size_t i=0; i<matrix->cols * matrix->rows; i++) *(matrix->data + i) *= num;
   return matrix;
 }
@@ -236,7 +236,7 @@ Matrix2D* matrix2d_cofactor(Matrix2D* matrix) {
   size_t n = matrix->rows;
   
   if (n == 1) {
-    float *cof = (float*)malloc(sizeof(float));
+    double *cof = (double*)malloc(sizeof(double));
     *cof = 1;
     Matrix2D *result = matrix2d_construct_default();
     result = matrix2d_construct(result, 1, 1, cof);
@@ -244,11 +244,11 @@ Matrix2D* matrix2d_cofactor(Matrix2D* matrix) {
     return result;
   }
 
-  float *cof = (float*)malloc(n*n * sizeof(float));
+  double *cof = (double*)malloc(n*n * sizeof(double));
   if (!cof) return NULL;
 
-  float det_minor=0, sign=1;
-  float* minor = NULL;
+  double det_minor=0, sign=1;
+  double* minor = NULL;
   
   for (size_t i=0; i < n; i++) {
     for (size_t j=0; j < n; j++) {
@@ -272,7 +272,7 @@ Matrix2D* matrix2d_cofactor(Matrix2D* matrix) {
 
 Matrix2D* matrix2d_inverse(Matrix2D* matrix) {
   if (matrix->rows != matrix->cols) return NULL;
-  float det = matrix2d_determinant(matrix);
+  double det = matrix2d_determinant(matrix);
   if (fabs(det) < EPS) return NULL;
   
   Matrix2D *cof = matrix2d_cofactor(matrix);
