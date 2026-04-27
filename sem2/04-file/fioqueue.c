@@ -25,9 +25,82 @@ Matrix2d* rand_gen_matrix2d(size_t n) {
   return arr;
 }
 
-int save_queue_to(const Queue*, const char*);
-int load_queue_from(Queue*, const char*);
-Matrix2d* get_text_element(const char*, int); // get by index
+int save_queue_to(const Queue* q, const char* filename) {
+  if (!q) return -1;
+  FILE *f = fopen(filename, "w");
+  if (!f) return -1;
+  
+  Iterator cur, end;
+  iter_begin(&cur, q);
+  iter_end(&end, q);
+  
+  while (!iter_equal(&cur, &end)) {
+    Matrix2d* m = (Matrix2d*)iter_get(&cur);
+    fprintf(f, "%zu %zu ", m->rows, m->cols);
+
+    for (size_t i=0; i<m->rows * m->cols; i++) fprintf(f, "%.6f ", *(m->data+i));
+    
+    fprintf(f, "\n");
+    iter_next(&cur);
+  }
+
+  fclose(f);
+  return 0;
+}
+
+int load_queue_from(Queue* q, const char* filename) {
+  FILE *f = fopen(filename, "r");
+  if (!f) return -1;
+
+  size_t rows, cols;
+  while (fscanf(f, "%zu %zu", &rows, &cols) == 2) {
+    Matrix2d* m = matrix2d_construct_default();
+    matrix2d_construct(m, rows, cols, NULL);
+
+    for (size_t i=0; i < rows*cols; i++)
+      if (fscanf(f, "%lf", m->data+i) != 1) {
+        matrix2d_destruct(m);
+        break;
+      }
+    
+    if (m) enqueue(q, m);
+  }
+
+  fclose(f);
+  return 0;
+}
+
+Matrix2d* get_text_element(const char* filename, int index) {
+  FILE *f = fopen(filename, "r");
+  if (!f) return NULL;
+  
+  int ch, line = 0;
+  while (line < index && (ch = fgetc(f)) != EOF) if (ch == '\n') line++;
+
+  if (line < index) {
+    fclose(f);
+    return NULL;
+  }
+
+  size_t rows, cols;
+  if (fscanf(f, "%zu %zu", &rows, &cols) != 2) {
+    fclose(f);
+    return NULL;
+  }
+
+  Matrix2d* m = matrix2d_construct_default();
+  matrix2d_construct(m, rows, cols, NULL);
+
+  for (size_t i=0; i < rows*cols; i++) 
+    if (fscanf(f, "%lf", m->data+i) != 1) {
+      matrix2d_destruct(m);
+      fclose(f);
+      return NULL;
+    }
+
+  fclose(f);
+  return m;
+}
 
 // Grade "Good"
 int saveb_queue_to(const Queue*, const char*);
