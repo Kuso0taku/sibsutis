@@ -214,3 +214,66 @@ Queue* rand_gen_matrix2d_in_queue(size_t n) {
 
   return q;
 }
+
+// Also 
+int list_text(const char* filename) {
+  Queue* q = queue_create();
+  if (load_text_queue_from(q, filename) != 0) {
+    queue_free(q);
+    return -1;
+  }
+
+  size_t size = queue_size(q);
+  printf("Total elements: %zu\n", size);
+
+  Iterator cur, end;
+  iter_begin(&cur, q);
+  iter_end(&end, q);
+
+  size_t idx=0;
+
+  while (!iter_equal(&cur, &end)) {
+    Matrix2d* m = (Matrix2d*)iter_get(&cur);
+
+    printf("[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
+    for (size_t i=0; i < m->rows * m->cols; i++) printf(" %.2f", *(m->data+i));
+    putchar('\n');
+
+    iter_next(&cur);
+    idx++;
+  }
+
+  queue_free(q);
+  return 0;
+}
+
+int list_binary(const char* filename) {
+  Queue* q = queue_create();
+  if (load_binary_queue_from(q, filename) != 0) {
+    queue_free(q);
+    return -1;
+  }
+
+  size_t size = queue_size(q);
+  printf("Total elements: %zu\n", size);
+
+  Iterator cur, end;
+  iter_begin(&cur, q);
+  iter_end(&end, q);
+
+  size_t idx=0;
+
+  while (!iter_equal(&cur, &end)) {
+    Matrix2d* m = (Matrix2d*)iter_get(&cur);
+
+    printf("[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
+    for (size_t i=0; i < m->rows * m->cols; i++) printf("  %.2f", *(m->data+i));
+    putchar('\n');
+
+    iter_next(&cur);
+    idx++;
+  }
+
+  queue_free(q);
+  return 0;
+}
