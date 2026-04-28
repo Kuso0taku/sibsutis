@@ -16,67 +16,67 @@ int main() {
   size_t matrix_choice = 1;
   
   wint_t code = 0;
-  fputws(L"This is an app for testing work with (double) matrices.\n\n", stdout);
+  fputws("This is an app for testing work with (double) matrices.\n\n", stdout);
   do {
-    fputws(L"Choose what to do:\n", stdout);
-    fputws(L"(1)  Compare two matrices\n", stdout);
-    fputws(L"(2)  Input the matrix\n", stdout);
-    fputws(L"(3)  Print the matrix\n", stdout);
-    fputws(L"(4)  Change the matrix values\n", stdout);
-    fputws(L"(5)  Fill the matrix with random values\n", stdout);
-    fputws(L"(6)  Get the matrix row\n", stdout);
-    fputws(L"(7)  Get the matrix col\n", stdout);
-    fputws(L"(8)  Transpose the matrix\n", stdout);
-    fputws(L"(9)  Find the determinant of the matrix\n", stdout);
-    fputws(L"(10) Find the inverse matrix\n", stdout);
-    fputws(L"(11) Change active matrix\n", stdout);
-    fputws(L"\n(0)  Exit\n", stdout);
-    putwchar('\n');
+    fputws("Choose what to do:\n", stdout);
+    fputws("(1)  Compare two matrices\n", stdout);
+    fputws("(2)  Input the matrix\n", stdout);
+    fputws("(3)  Print the matrix\n", stdout);
+    fputws("(4)  Change the matrix values\n", stdout);
+    fputws("(5)  Fill the matrix with random values\n", stdout);
+    fputws("(6)  Get the matrix row\n", stdout);
+    fputws("(7)  Get the matrix col\n", stdout);
+    fputws("(8)  Transpose the matrix\n", stdout);
+    fputws("(9)  Find the determinant of the matrix\n", stdout);
+    fputws("(10) Find the inverse matrix\n", stdout);
+    fputws("(11) Change active matrix\n", stdout);
+    fputws("\n(0)  Exit\n", stdout);
+    putchar('\n');
 
-    wprintf(L"Enter your choice: ");
-    while ((code = wscanf(L"%zu", &choice))!=1 || choice>11) {
-      if (code == WEOF) {
-        wprintf(L"WEOF ERROR! ABORTING.\n");
+    printf("Enter your choice: ");
+    while ((code = scanf("%zu", &choice))!=1 || choice>11) {
+      if (code == EOF) {
+        printf("EOF ERROR! ABORTING.\n");
         matrix2d_destruct(active_matrix);
         matrix2d_destruct(other_matrix);
         return -1;
       }
-      while (getwchar() != L'\n');
-      wprintf(L"Invalid input! Try again: ");
+      while (getchar() != '\n');
+      printf("Invalid input! Try again: ");
     }
     
-    putwchar(L'\n');
+    putchar('\n');
     
     switch (choice) {
       // Exit
       case 0: 
-        fputws(L"Thanks for using me!\n", stdout);
+        fputws("Thanks for using me!\n", stdout);
         matrix2d_destruct(active_matrix);
         matrix2d_destruct(other_matrix);
         return 0;
 
       // Compare
       case 1: 
-        fputws(L"Avaliable compares are:\n", stdout);
-        fputws(L"(1) Greater than\n", stdout);
-        fputws(L"(2) Less than\n", stdout);
-        fputws(L"(3) Equal to\n", stdout);
-        fputws(L"(4) Not equal to\n", stdout);
-        fputws(L"(5) Greater than or equal to\n", stdout);
-        fputws(L"(6) Less than or equal to\n", stdout);
-        putwchar(L'\n');
+        fputws("Avaliable compares are:\n", stdout);
+        fputws("(1) Greater than\n", stdout);
+        fputws("(2) Less than\n", stdout);
+        fputws("(3) Equal to\n", stdout);
+        fputws("(4) Not equal to\n", stdout);
+        fputws("(5) Greater than or equal to\n", stdout);
+        fputws("(6) Less than or equal to\n", stdout);
+        putchar('\n');
 
-        wprintf(L"Enter your choice: ");
-        while ((code = wscanf(L"%zu", &sub_choice))!=1 || 
+        printf("Enter your choice: ");
+        while ((code = scanf("%zu", &sub_choice))!=1 || 
           sub_choice<1 || sub_choice>6) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
         
         _Bool cmp = 0;
@@ -91,15 +91,15 @@ int main() {
           case 6: cmp = matrix2d_less_or_eql(active_matrix, other_matrix); break;
         }
         
-        if (cmp) fputws(L"True!\n", stdout);
-        else fputws(L"False!\n", stdout);
+        if (cmp) fputws("True!\n", stdout);
+        else fputws("False!\n", stdout);
 
         break;
 
       // input
       case 2:
-        code = matrix2d_wscanf(active_matrix);
-        if (code == WEOF) {
+        code = matrix2d_scanf(active_matrix);
+        if (code == EOF) {
           matrix2d_destruct(active_matrix);
           matrix2d_destruct(other_matrix);
           return -1;
@@ -108,33 +108,33 @@ int main() {
 
       // output
       case 3:
-        matrix2d_wprintf(active_matrix);
+        matrix2d_printf(active_matrix);
         break;
 
       // change values 
       case 4:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
-        fputws(L"What do you want to do?\n", stdout);
-        fputws(L"(1) Increment every element in the matrix\n", stdout);
-        fputws(L"(2) Decrement every element in the matrix\n", stdout);
-        fputws(L"(3) Change a specific element in the matrix\n", stdout);
-        putwchar(L'\n');
+        fputws("What do you want to do?\n", stdout);
+        fputws("(1) Increment every element in the matrix\n", stdout);
+        fputws("(2) Decrement every element in the matrix\n", stdout);
+        fputws("(3) Change a specific element in the matrix\n", stdout);
+        putchar('\n');
 
-        wprintf(L"Enter your choice: ");
-        while ((code = wscanf(L"%zu", &sub_choice))!=1 || 
+        printf("Enter your choice: ");
+        while ((code = scanf("%zu", &sub_choice))!=1 || 
           sub_choice<1 || sub_choice>3) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
         
         // type of change
@@ -145,40 +145,40 @@ int main() {
             size_t row=0, col=0;
             double value=0;
 
-            wprintf(L"Enter the row INDEX of the element to change: ");
-            while ((code = wscanf(L"%zu", &row))!=1 || row>active_matrix->rows) {
-              if (code == WEOF) {
-                wprintf(L"WEOF ERROR! ABORTING.\n");
+            printf("Enter the row INDEX of the element to change: ");
+            while ((code = scanf("%zu", &row))!=1 || row>active_matrix->rows) {
+              if (code == EOF) {
+                printf("EOF ERROR! ABORTING.\n");
                 matrix2d_destruct(active_matrix);
                 matrix2d_destruct(other_matrix);
                 return -1;
               }
-              while (getwchar() != L'\n');
-              wprintf(L"Invalid input! Try again: ");
+              while (getchar() != '\n');
+              printf("Invalid input! Try again: ");
             }
 
-            wprintf(L"Enter the column INDEX of the element to change: ");
-            while ((code = wscanf(L"%zu", &col))!=1 || col>active_matrix->cols) {
-              if (code == WEOF) {
-                wprintf(L"WEOF ERROR! ABORTING.\n");
+            printf("Enter the column INDEX of the element to change: ");
+            while ((code = scanf("%zu", &col))!=1 || col>active_matrix->cols) {
+              if (code == EOF) {
+                printf("EOF ERROR! ABORTING.\n");
                 matrix2d_destruct(active_matrix);
                 matrix2d_destruct(other_matrix);
                 return -1;
               }
-              while (getwchar() != L'\n');
-              wprintf(L"Invalid input! Try again: ");
+              while (getchar() != '\n');
+              printf("Invalid input! Try again: ");
             }
 
-            wprintf(L"Enter the value of the element to change: ");
-            while ((code = wscanf(L"%f", &value))!=1) {
-              if (code == WEOF) {
-                wprintf(L"WEOF ERROR! ABORTING.\n");
+            printf("Enter the value of the element to change: ");
+            while ((code = scanf("%lf", &value))!=1) {
+              if (code == EOF) {
+                printf("EOF ERROR! ABORTING.\n");
                 matrix2d_destruct(active_matrix);
                 matrix2d_destruct(other_matrix);
                 return -1;
               }
-              while (getwchar() != L'\n');
-              wprintf(L"Invalid input! Try again: ");
+              while (getchar() != '\n');
+              printf("Invalid input! Try again: ");
             }
             
             matrix2d_setter(active_matrix, row, col, value);
@@ -190,36 +190,36 @@ int main() {
       // fill with random values
       case 5:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
         double min=0, max=0;
 
-        wprintf(L"Enter the minimal value of random number: ");
-        while ((code = wscanf(L"%f", &min))!=1) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+        printf("Enter the minimal value of random number: ");
+        while ((code = scanf("%lf", &min))!=1) {
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
         
-        wprintf(L"Enter the maximum value of random number: ");
-        while ((code = wscanf(L"%f", &max))!=1 || max<min) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+        printf("Enter the maximum value of random number: ");
+        while ((code = scanf("%lf", &max))!=1 || max<min) {
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          if (max<min) wprintf(L"Max value must be greater than or equal to min! ");
-          else wprintf(L"Invalid input! ");
-          wprintf(L"Try again: ");
+          while (getchar() != '\n');
+          if (max<min) printf("Max value must be greater than or equal to min! ");
+          else printf("Invalid input! ");
+          printf("Try again: ");
         }
         
         matrix2d_random(active_matrix, min, max);
@@ -228,53 +228,53 @@ int main() {
       // get row 
       case 6:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
-        wprintf(L"Enter the row INDEX of the matrix: ");
-        while ((code = wscanf(L"%zu", &sub_choice))!=1 || 
+        printf("Enter the row INDEX of the matrix: ");
+        while ((code = scanf("%zu", &sub_choice))!=1 || 
           sub_choice>active_matrix->rows) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
 
-        matrix2d_wprintf(matrix2d_get_row(active_matrix, sub_choice));
+        matrix2d_printf(matrix2d_get_row(active_matrix, sub_choice));
         break;
 
       // get col
       case 7:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
-        wprintf(L"Enter the column INDEX of the matrix: ");
-        while ((code = wscanf(L"%zu", &sub_choice))!=1 || 
+        printf("Enter the column INDEX of the matrix: ");
+        while ((code = scanf("%zu", &sub_choice))!=1 || 
           sub_choice>active_matrix->rows) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
 
-        matrix2d_wprintf(matrix2d_get_col(active_matrix, sub_choice));
+        matrix2d_printf(matrix2d_get_col(active_matrix, sub_choice));
         break;
       
       // transpose
       case 8:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
@@ -284,72 +284,72 @@ int main() {
       // determinant 
       case 9:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
         if (active_matrix->rows != active_matrix->cols) {
-          fputws(L"Oops! The matrix must be square!\n", stdout);
+          fputws("Oops! The matrix must be square!\n", stdout);
           break;
         }
         
-        wprintf(L"The determinant of the matrix is %.2f\n", 
+        printf("The determinant of the matrix is %.2f\n", 
                 matrix2d_determinant(active_matrix));
         break;
 
       // find the inverse matrix 
       case 10:
         if (!active_matrix->data) {
-          fputws(L"Oops! The matrix is empty! First, input one\n", stdout);
+          fputws("Oops! The matrix is empty! First, input one\n", stdout);
           break;
         }
 
         if (active_matrix->rows != active_matrix->cols) {
-          fputws(L"Oops! The matrix must be square!\n", stdout);
+          fputws("Oops! The matrix must be square!\n", stdout);
           break;
         }
 
         if (!matrix2d_determinant(active_matrix)) {
-          fputws(L"Oops! The determinant must not be 0!\n", stdout);
+          fputws("Oops! The determinant must not be 0!\n", stdout);
           break;
         }
 
-        matrix2d_wprintf(matrix2d_inverse(active_matrix));
+        matrix2d_printf(matrix2d_inverse(active_matrix));
         break;
       
       // change active matrix
       case 11:
-        fputws(L"Matrices to choose:\n", stdout);
+        fputws("Matrices to choose:\n", stdout);
 
-        fputws(L"matrix(1)", stdout);
-        if (matrix_choice == 1) fputws(L" - (active)", stdout);
-        putwchar(L'\n');
-        fputws(L"matrix(2)", stdout);
-        if (matrix_choice == 2) fputws(L" - (active)", stdout);
-        putwchar(L'\n');
+        fputws("matrix(1)", stdout);
+        if (matrix_choice == 1) fputws(" - (active)", stdout);
+        putchar('\n');
+        fputws("matrix(2)", stdout);
+        if (matrix_choice == 2) fputws(" - (active)", stdout);
+        putchar('\n');
         
-        wprintf(L"Enter your choice: ");
-        while ((code = wscanf(L"%zu", &matrix_choice))!=1 || 
+        printf("Enter your choice: ");
+        while ((code = scanf("%zu", &matrix_choice))!=1 || 
           matrix_choice<1 || matrix_choice>2) {
-          if (code == WEOF) {
-            wprintf(L"WEOF ERROR! ABORTING.\n");
+          if (code == EOF) {
+            printf("EOF ERROR! ABORTING.\n");
             matrix2d_destruct(active_matrix);
             matrix2d_destruct(other_matrix);
             return -1;
           }
-          while (getwchar() != L'\n');
-          wprintf(L"Invalid input! Try again: ");
+          while (getchar() != '\n');
+          printf("Invalid input! Try again: ");
         }
 
         if (matrix_choice == 1) active_matrix = matrix1;
         else active_matrix = matrix2;
 
-        wprintf(L"Now the matrix(%zu) is active\n", matrix_choice);
+        printf("Now the matrix(%zu) is active\n", matrix_choice);
 
         break;
     }
 
-    putwchar(L'\n');
+    putchar('\n');
   } while (choice>0 && choice<12);
   
   matrix2d_destruct(active_matrix);

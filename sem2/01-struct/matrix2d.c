@@ -2,6 +2,7 @@
 #include <string.h> // memcpy
 #include <math.h> // for fabs
 #include <time.h> // for time() - seed for srand()
+#include <stdio.h>
 #include "matrix2d.h"
 
 // memory methods
@@ -64,41 +65,41 @@ int matrix2d_cmp(Matrix2D* m1, Matrix2D* m2) {
   return 0;
 }
 
-wint_t matrix2d_wscanf(Matrix2D* matrix) {
+int matrix2d_scanf(Matrix2D* matrix) {
   size_t n=0, m=0;
-  wint_t code=0;
+  int code=0;
   
-  wprintf(L"Enter the number of rows: ");
-  while ((code = wscanf(L"%zu", &n))!=1) {
-    if (code == WEOF) {
-      wprintf(L"WEOF ERROR! ABORTING.\n");
-      return WEOF;
+  printf("Enter the number of rows: ");
+  while ((code = scanf("%zu", &n))!=1) {
+    if (code == EOF) {
+      printf("EOF ERROR! ABORTING.\n");
+      return EOF;
     }
-    while (getwchar() != L'\n');
-    wprintf(L"Invalid input! Try again: ");
+    while (getchar() != '\n');
+    printf("Invalid input! Try again: ");
   }
 
-  wprintf(L"Enter the number of cols: ");
-  while ((code = wscanf(L"%zu", &m))!=1) {
-    if (code == WEOF) {
-      wprintf(L"WEOF ERROR! ABORTING.\n");
-      return WEOF;
+  printf("Enter the number of cols: ");
+  while ((code = scanf("%zu", &m))!=1) {
+    if (code == EOF) {
+      printf("EOF ERROR! ABORTING.\n");
+      return EOF;
     }
-    while (getwchar() != L'\n');
-    wprintf(L"Invalid input! Try again: ");
+    while (getchar() != '\n');
+    printf("Invalid input! Try again: ");
   }
 
   double* arr = (double*)malloc(n*m * sizeof(double));
-  wprintf(L"Enter %zu elements of matrix here:\n", n*m);
+  printf("Enter %zu elements of matrix here:\n", n*m);
   for (size_t i=0; i<n*m; i++) {
-    wprintf(L"Element [%zu][%zu]: ", i/m, i%m);
-    while ((code = wscanf(L"%f", arr+i))!=1) {
-      if (code == WEOF) {
-        wprintf(L"WEOF ERROR! ABORTING.\n");
-        return WEOF;
+    printf("Element [%zu][%zu]: ", i/m, i%m);
+    while ((code = scanf("%lf", arr+i))!=1) {
+      if (code == EOF) {
+        printf("EOF ERROR! ABORTING.\n");
+        return EOF;
       }
-      while (getwchar() != L'\n');
-      wprintf(L"Invalid input! Try again: ");
+      while (getchar() != '\n');
+      printf("Invalid input! Try again: ");
     }
   }
   
@@ -110,18 +111,18 @@ wint_t matrix2d_wscanf(Matrix2D* matrix) {
   return 0;
 }
 
-void matrix2d_wprintf(Matrix2D* matrix) {
-  wprintf(L"rows: %zu\ncols: %zu\n", matrix->rows, matrix->cols);
-  wprintf(L"{\n  ");
+void matrix2d_printf(Matrix2D* matrix) {
+  printf("rows: %zu\ncols: %zu\n", matrix->rows, matrix->cols);
+  printf("{\n  ");
   for (size_t i=0; i<matrix->rows; i++) {
-    putwchar(L'{');
+    putchar('{');
     for (size_t j=0; j<matrix->cols-1; j++) {
-      wprintf(L"%.2f, ", *(matrix->data+(i*matrix->cols)+j));
+      printf("%.2f, ", *(matrix->data+(i*matrix->cols)+j));
     }
-    wprintf(L"%.2f}", *(matrix->data+(i*matrix->cols)+(matrix->cols-1)));
-    if (i < matrix->rows - 1) wprintf(L",\n  ");
+    printf("%.2f}", *(matrix->data+(i*matrix->cols)+(matrix->cols-1)));
+    if (i < matrix->rows - 1) printf(",\n  ");
   }
-  wprintf(L"\n}\n");
+  printf("\n}\n");
 }
 
 void matrix2d_increment(Matrix2D* matrix) {
