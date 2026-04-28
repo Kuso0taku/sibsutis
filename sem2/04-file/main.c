@@ -86,15 +86,38 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    //free_memory(q);
+    free_memory(q);
     printf("Saved %d elements to %s\n", QUEUE_SIZE, filename);
   }
 
-/*
-  else if (strcmp(command, "load")) {
+  else if (!strcmp(command, "load")) {
+    const char* filename = *(argv + arg_offset+1);
+
+    Queue* q = queue_create();
+    if (!q) {
+      perror("queue create");
+      return 2;
+    }
+
+    int result = 0;
+    
+    switch (mode) {
+      case TEXT: result = load_text_queue_from(q, filename); break;
+      case BINARY: result = load_binary_queue_from(q, filename);
+    }
+
+    if (result) {
+      fprintf(stderr, "load failed\n");
+      queue_free(q);
+      return 1;
+    }
+
+    printf("Loaded %zu elements from %s\n", queue_size(q), filename);
+    free_memory(q);
   }
 
-  else if (strcmp(command, "list")) {
+/*
+  else if (!strcmp(command, "list")) {
   } 
 
   else if (!strcmp(command, "get")) {
