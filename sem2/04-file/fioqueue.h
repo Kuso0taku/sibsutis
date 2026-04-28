@@ -27,6 +27,7 @@ int get_binary_element(const char* filename, int index, void* result); // get by
 Queue* rand_gen_matrix2d_in_queue(size_t n);
 
 // Also 
+void free_memory(Queue* q); // free queue and every matrix memory
 int list_text(const char* filename);
 int list_binary(const char* filename);
 

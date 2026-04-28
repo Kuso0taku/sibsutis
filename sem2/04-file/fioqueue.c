@@ -11,8 +11,15 @@ static size_t gen_rand_size_t(size_t min, size_t max) {
 static void fill_rand_matrix2d(Matrix2D* m) {
     size_t rows = gen_rand_size_t(1, MAX_ROW);
     size_t cols = gen_rand_size_t(1, MAX_COL);
-  
+    
     matrix2d_construct(m, rows, cols, NULL);
+
+    m->data = (double*)malloc(rows*cols* sizeof(double)); // alloc memory for data
+    if (!m->data) {
+      fprintf(stderr, "Memory allocation failed.\n");
+      exit(1);
+    }
+    
     matrix2d_random(m, MIN_DOUBLE, MAX_DOUBLE);
 }
 
@@ -59,6 +66,12 @@ int load_text_queue_from(Queue* q, const char* filename) {
     Matrix2D* m = matrix2d_construct_default();
     matrix2d_construct(m, rows, cols, NULL);
 
+    m->data = (double*)malloc(rows*cols* sizeof(double)); // alloc memory for data
+    if (!m->data) {
+      fprintf(stderr, "Memory allocation failed.\n");
+      exit(1);
+    }
+
     for (size_t i=0; i < rows*cols; i++)
       if (fscanf(f, "%lf", m->data+i) != 1) {
         matrix2d_destruct(m);
@@ -92,6 +105,11 @@ Matrix2D* get_text_element(const char* filename, int index) {
 
   Matrix2D* m = matrix2d_construct_default();
   matrix2d_construct(m, rows, cols, NULL);
+  m->data = (double*)malloc(rows*cols* sizeof(double)); // alloc memory for data
+  if (!m->data) {
+    fprintf(stderr, "Memory allocation failed.\n");
+    exit(1);
+  }
 
   for (size_t i=0; i < rows*cols; i++) 
     if (fscanf(f, "%lf", m->data+i) != 1) {
@@ -144,6 +162,12 @@ int load_binary_queue_from(Queue* q, const char* filename) {
     
     Matrix2D* m = matrix2d_construct_default();
     matrix2d_construct(m, rows, cols, NULL);
+
+    m->data = (double*)malloc(rows*cols* sizeof(double)); // alloc memory for data
+    if (!m->data) {
+      fprintf(stderr, "Memory allocation failed.\n");
+      exit(1);
+    }
 
     if (fread(m->data, sizeof(double), m->rows * m->cols, f) != rows*cols) {
       matrix2d_destruct(m);
@@ -220,7 +244,7 @@ Queue* rand_gen_matrix2d_in_queue(size_t n) {
 int list_text(const char* filename) {
   Queue* q = queue_create();
   if (load_text_queue_from(q, filename) != 0) {
-    queue_free(q);
+    free_memory(q);
     return -1;
   }
 
@@ -244,14 +268,14 @@ int list_text(const char* filename) {
     idx++;
   }
 
-  queue_free(q);
+  free_memory(q);
   return 0;
 }
 
 int list_binary(const char* filename) {
   Queue* q = queue_create();
   if (load_binary_queue_from(q, filename) != 0) {
-    queue_free(q);
+    free_memory(q);
     return -1;
   }
 
@@ -275,6 +299,26 @@ int list_binary(const char* filename) {
     idx++;
   }
 
-  queue_free(q);
+  free_memory(q);
   return 0;
+}
+
+// free queue and every matrix memory
+void free_memory(Queue* q) {
+  if (!q) return;
+
+  Iterator cur, end;
+  iter_begin(&cur, q);
+  iter_end(&end, q);
+  
+  // free every matrix memory
+  while (!iter_equal(&cur, &end)) {
+    Matrix2D* m = (Matrix2D*)iter_get(&cur);
+    if (m) {
+      matrix2d_destruct(m);
+      cur.current->data = NULL;
+    }
+  }
+  
+  queue_free(q);
 }
