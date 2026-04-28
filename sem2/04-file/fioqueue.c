@@ -213,6 +213,13 @@ int get_binary_element(const char* filename, int index, void* result) {
 
   Matrix2D* m = matrix2d_construct_default();
   matrix2d_construct(m, r, c, NULL);
+
+  m->data = (double*)malloc(r*c* sizeof(double)); // alloc memory for data
+  if (!m->data) {
+    fprintf(stderr, "Memory allocation failed.\n");
+    exit(1);
+  }
+
   
   if (fread(m->data, sizeof(double), r*c, f) != r*c) {
     matrix2d_destruct(m);
