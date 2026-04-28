@@ -181,10 +181,10 @@ int main(int argc, char* argv[]) {
     matrix2d_destruct(m);
   }
 
-/*
   else {
-
+    usage();
+    return 1;
   }
-*/
+
   return 0;
 }
