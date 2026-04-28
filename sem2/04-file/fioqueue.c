@@ -260,7 +260,7 @@ int list_text(const char* filename) {
   while (!iter_equal(&cur, &end)) {
     Matrix2D* m = (Matrix2D*)iter_get(&cur);
 
-    printf("[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
+    printf("\n[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
     for (size_t i=0; i < m->rows * m->cols; i++) printf(" %.2f", *(m->data+i));
     putchar('\n');
 
@@ -291,7 +291,7 @@ int list_binary(const char* filename) {
   while (!iter_equal(&cur, &end)) {
     Matrix2D* m = (Matrix2D*)iter_get(&cur);
 
-    printf("[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
+    printf("\n[%zu] rows=%zu, cols=%zu\nElements:\n", idx, m->rows, m->cols);
     for (size_t i=0; i < m->rows * m->cols; i++) printf("  %.2f", *(m->data+i));
     putchar('\n');
 
