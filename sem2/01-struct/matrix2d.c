@@ -15,7 +15,6 @@ Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const double*
   if (!arr) {
     matrix->rows = n;
     matrix->cols = m;
-    matrix->data = NULL;
     return matrix;
   }
   if (matrix->rows * matrix->cols != n*m) {
@@ -138,7 +137,6 @@ void matrix2d_setter(Matrix2D* matrix, size_t row, size_t col, double value) {
 }
 
 void matrix2d_random(Matrix2D* matrix, double min, double max) {
-  srand(time(NULL)); // make seed for random number
   for (size_t i=0; i < matrix->rows * matrix->cols; i++) 
        *(matrix->data+i) = min + (double)rand() / RAND_MAX * (max-min);
 }

@@ -3,6 +3,8 @@
 #include "matrix2d.h"
 
 int main() {
+  srand(time(NULL)); // make seed for random number
+                     
   // init matrices
   Matrix2D *matrix1 = matrix2d_construct_default();
   Matrix2D *matrix2 = matrix2d_construct_default();
