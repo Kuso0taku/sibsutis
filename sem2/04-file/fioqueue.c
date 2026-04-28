@@ -318,6 +318,7 @@ void free_memory(Queue* q) {
       matrix2d_destruct(m);
       cur.current->data = NULL;
     }
+    iter_next(&cur);
   }
   
   queue_free(q);
