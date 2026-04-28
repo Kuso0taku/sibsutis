@@ -33,6 +33,10 @@ void usage(void) {
   printf("\tfioqueue --binary list queue.bin\n");
 }
 
+int gen_rand_int(int min, int max) {
+  return (int)rand() / (RAND_MAX + 1.0) * (max - min) + min;
+}
+
 int main(int argc, char* argv[]) {
   if (argc < 3 || argc > 5) {
     usage();
@@ -68,7 +72,7 @@ int main(int argc, char* argv[]) {
 
     Queue* q = rand_gen_matrix2d_in_queue(QUEUE_SIZE);
     if (!q) {
-      perror("queue create");
+      perror("queue create.");
       return 2;
     }
 
@@ -82,7 +86,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (result) {
-      fprintf(stderr, "save failed\n");
+      fprintf(stderr, "save failed.\n");
       queue_free(q);
       return 1;
     }
@@ -96,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     Queue* q = queue_create();
     if (!q) {
-      perror("queue create");
+      perror("queue create.");
       return 2;
     }
 
@@ -108,12 +112,12 @@ int main(int argc, char* argv[]) {
     }
 
     if (result) {
-      fprintf(stderr, "load failed\n");
+      fprintf(stderr, "load failed.\n");
       queue_free(q);
       return 1;
     }
 
-    printf("Loaded %zu elements from %s\n", queue_size(q), filename);
+    printf("Loaded %zu elements from %s.\n", queue_size(q), filename);
     free_memory(q);
   }
 
@@ -130,17 +134,54 @@ int main(int argc, char* argv[]) {
     }
 
     if (result) {
-      fprintf(stderr, "list failed\n");
+      fprintf(stderr, "list failed.\n");
       return 1;
     }
 
     printf("\nList from %s done.\n", filename);
   } 
 
-/*
   else if (!strcmp(command, "get")) {
+    const char* filename = *(argv + arg_offset+2);
+
+    const char* index = *(argv + arg_offset+1);
+    int idx = atoi(index);
+
+    printf("Getting [%d] element from %s...\n", idx, filename);    
+    
+    Matrix2D* m = NULL;
+
+    switch (mode) {
+      case TEXT:
+        m = get_text_element(filename, idx); 
+
+        if (!m) {
+          matrix2d_destruct(m);
+          fprintf(stderr, "get failed.\n");
+          return 1;
+        }
+        
+        printf("Element've been got from %s successful:\n", filename);
+        matrix2d_printf(m);
+        break;
+
+      case BINARY: 
+        int result = get_binary_element(filename, idx, &m);
+
+        if (result) {
+          fprintf(stderr, "get failed.\n");
+          return 1;
+        }
+        
+        printf("Element've been got from %s successful:\n", filename);
+        matrix2d_printf(m);
+        break;
+    }
+    
+    matrix2d_destruct(m);
   }
 
+/*
   else {
 
   }
