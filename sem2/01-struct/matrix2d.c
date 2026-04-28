@@ -15,7 +15,7 @@ Matrix2D *matrix2d_construct(Matrix2D* matrix, size_t n, size_t m, const double*
   if (!arr) {
     matrix->rows = n;
     matrix->cols = m;
-    matrix->arr = NULL;
+    matrix->data = NULL;
     return matrix;
   }
   if (matrix->rows * matrix->cols != n*m) {
