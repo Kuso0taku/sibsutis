@@ -33,10 +33,6 @@ void usage(void) {
   printf("\tfioqueue --binary list queue.bin\n");
 }
 
-int gen_rand_int(int min, int max) {
-  return (int)rand() / (RAND_MAX + 1.0) * (max - min) + min;
-}
-
 int main(int argc, char* argv[]) {
   if (argc < 3 || argc > 5) {
     usage();
