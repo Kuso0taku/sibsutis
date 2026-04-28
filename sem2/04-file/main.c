@@ -63,7 +63,8 @@ int main(int argc, char* argv[]) {
   if (!strcmp(command, "save")) {
     const char* filename = *(argv + arg_offset+1);
     
-    printf("Queue creation...\n");
+    printf("Saving to %s started...\n", filename);
+    printf("Creating queue...\n");
 
     Queue* q = rand_gen_matrix2d_in_queue(QUEUE_SIZE);
     if (!q) {
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
       return 2;
     }
 
-    printf("Queue created successful\n");
+    printf("Queue created successful.\n");
     
     int result = 0;
     
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
     }
 
     free_memory(q);
-    printf("Saved %d elements to %s\n", QUEUE_SIZE, filename);
+    printf("Saved %d elements to %s.\n", QUEUE_SIZE, filename);
   }
 
   else if (!strcmp(command, "load")) {
@@ -116,10 +117,27 @@ int main(int argc, char* argv[]) {
     free_memory(q);
   }
 
-/*
   else if (!strcmp(command, "list")) {
+    const char* filename = *(argv + arg_offset+1);
+
+    printf("List elements from %s...\n\n", filename);
+
+    int result = 0;
+
+    switch (mode) {
+      case TEXT: result = list_text(filename); break;
+      case BINARY: result = list_binary(filename);
+    }
+
+    if (result) {
+      fprintf(stderr, "list failed\n");
+      return 1;
+    }
+
+    printf("\nList from %s done.\n", filename);
   } 
 
+/*
   else if (!strcmp(command, "get")) {
   }
 
