@@ -30,6 +30,6 @@ debug: $(APP)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(APP) $(OBJECTS) main.o test.o
+	rm -f $(APP) $(OBJECTS) main.o test.o test
 
 .PHONY: all clean
