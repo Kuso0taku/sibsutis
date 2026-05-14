@@ -43,3 +43,48 @@ static void calc_init_hash(uint32_t H[8]) {
 static void calc_init_hash(uint32_t K[64]) {
   for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(sqrt((double)*(primes_64+i)));
 }
+
+// handle one 512-bits block 
+static void sha256_transform(SHA256_CTX* ctx) {
+  uint32_t W[64]; // message schedule 
+  
+  // first 16 words directly from block (big-endian)
+  for (size_t i=0, j=0; i<16; i++, j+=4) {
+    *(W+i) = ((uint32_t)*(ctx->block+j)   << 24) |
+             ((uint32_t)*(ctx->block+j+1) << 16) |
+             ((uint32_t)*(ctx->block+j+2) << 8) |
+             ((uint32_t)*(ctx->block+j+3))
+  }
+
+  // expand schedule 
+  for (size_t i=16; i<64; i++) {
+    uint32_t s0 = sigma0(*(W + i-15));
+    uint32_t s1 = sigma0(*(W + i-2));
+    *(W+1) = *(W + i-16) + s0 + *(W + i-7) + s1;
+  }
+
+  // some variables a..h as an array r[0..7]
+  uint32_t r[8];
+  for (size_t i=0; i<8; i++) *(r+i) = *(ctx->state+i);
+
+  // 64 rounds
+  for (size_t t=0; t<64; t++) {
+    uint32_t T1 = *(r+7) + SIGMA1(*(r+4)) + CH(*(r+4), *(r+5), *(r+6)) + 
+      *(ctx->K+t) + *(W+t);
+
+    uint32_t T2 = SIGMA0(*r) + MAJ(*r, *(r+1), *(r+2));
+
+    // registers shift
+    *(r+7) = *(r+6);
+    *(r+6) = *(r+5);
+    *(r+5) = *(r+4);
+    *(r+4) = *(r+3) + T1;
+    *(r+3) = *(r+2);
+    *(r+2) = *(r+1);
+    *(r+1) = *(r+0);
+    *(r+0) = T1 + T2;
+  }
+
+  // add result to state 
+  for (size_t i=0; i<8; i++) *(ctx->state+i) += *(r+i);
+}
