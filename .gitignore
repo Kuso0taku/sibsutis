@@ -2,9 +2,11 @@
 **/test
 **/program
 **/fioqueue
+**/sha256tool
 **/in
 **/out
 **/*.o
 **/*.txt
 **/*.bin
 **/*.log
+**/*.sha256
