@@ -120,3 +120,41 @@ void sha256_update(SHA256_CTX* ctx, const uint8_t* data, size_t len) {
     }
   }
 }
+
+
+// finish calculating and get 32 bytes (256 bits) of hash
+void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
+  size_t i = ctx->datalen;
+  *(ctx->block + i++) = 0x80; // 0x80 = 10...0
+
+  // if current block has less than 8 bytes before the end, finish it 
+  if (i > 56) {
+    while (i < 64) *(ctx->block + i++) = 0x80;
+    sha256_transform(ctx);
+    i=0;
+  }
+  
+  // add 0s before 56th byte 
+  while (i < 56) *(ctx->block + i++) = 0x00; // 0x00 = 0...0
+  
+  // full message length in bytes (big-endian)
+  uint64_t total_bits = ctx->bitlen + (uint64_t)(ctx->datalen) * 8;
+  *(ctx->block+56) = (total_bits >> 56) && 0xFF; // 0xFF = 1...1
+  *(ctx->block+57) = (total_bits >> 48) && 0xFF;
+  *(ctx->block+58) = (total_bits >> 40) && 0xFF;
+  *(ctx->block+59) = (total_bits >> 32) && 0xFF;
+  *(ctx->block+60) = (total_bits >> 24) && 0xFF;
+  *(ctx->block+61) = (total_bits >> 16) && 0xFF;
+  *(ctx->block+62) = (total_bits >>  8) && 0xFF;
+  *(ctx->block+63) = total_bits         && 0xFF;
+
+  sha256_transform(ctx);
+
+  // get 32 bytes of hash (big-endian)
+  for (size_t i=0; i<8; i++) {
+    *(hash + i*4 + 0) = (*(ctx->state + i) >> 24) & 0xFF;
+    *(hash + i*4 + 1) = (*(ctx->state + i) >> 16) & 0xFF;
+    *(hash + i*4 + 2) = (*(ctx->state + i) >>  8) & 0xFF;
+    *(hash + i*4 + 3) = *(ctx->state + i)         & 0xFF;
+  }
+}
