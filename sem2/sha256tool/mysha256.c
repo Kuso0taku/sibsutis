@@ -41,7 +41,7 @@ static void calc_init_hash(uint32_t H[8]) {
 
 // calculate round constants
 static void calc_round_consts(uint32_t K[64]) {
-  for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(sqrt((double)*(prime_64+i)));
+  for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(cbrt((double)*(prime_64+i)));
 }
 
 // handle one 512-bits block 
@@ -59,8 +59,8 @@ static void sha256_transform(SHA256_CTX* ctx) {
   // expand schedule 
   for (size_t i=16; i<64; i++) {
     uint32_t s0 = sigma0(*(W + i-15));
-    uint32_t s1 = sigma0(*(W + i-2));
-    *(W+1) = *(W + i-16) + s0 + *(W + i-7) + s1;
+    uint32_t s1 = sigma1(*(W + i-2));
+    *(W+i) = *(W + i-16) + s0 + *(W + i-7) + s1;
   }
 
   // some variables a..h as an array r[0..7]
@@ -104,6 +104,7 @@ void sha256_init(SHA256_CTX* ctx) {
   // change constants in non-initialized context
   memcpy(ctx->H, H, sizeof(H));
   memcpy(ctx->K, K, sizeof(K));
+  memset(ctx->block, 0, sizeof(ctx->block));
   memcpy(ctx->state, ctx->H, sizeof(ctx->H)); // init state = H
   ctx->datalen = 0;
   ctx->bitlen = 0;
@@ -117,6 +118,7 @@ void sha256_update(SHA256_CTX* ctx, const uint8_t* data, size_t len) {
       sha256_transform(ctx);
       ctx->bitlen += 512;
       ctx->datalen = 0;
+      memset(ctx->block, 0, 64);
     }
   }
 }
@@ -124,13 +126,18 @@ void sha256_update(SHA256_CTX* ctx, const uint8_t* data, size_t len) {
 
 // finish calculating and get 32 bytes (256 bits) of hash
 void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
+  uint64_t total_bits = ctx->bitlen + (uint64_t)ctx->datalen * 8;
+
+  memset(ctx->block + ctx->datalen, 0, 64 - ctx->datalen);
+
   size_t i = ctx->datalen;
   *(ctx->block + i++) = 0x80; // 0x80 = 10...0
 
   // if current block has less than 8 bytes before the end, finish it 
   if (i > 56) {
-    while (i < 64) *(ctx->block + i++) = 0x80;
+    while (i < 64) *(ctx->block + i++) = 0x00;
     sha256_transform(ctx);
+    ctx->bitlen += 512;
     i=0;
   }
   
@@ -138,7 +145,6 @@ void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
   while (i < 56) *(ctx->block + i++) = 0x00; // 0x00 = 0...0 (8 bits)
   
   // full message length in bytes (big-endian)
-  uint64_t total_bits = ctx->bitlen + (uint64_t)(ctx->datalen) * 8;
   *(ctx->block+56) = (total_bits >> 56) & 0xFF; // 0xFF = 1...1 (8 bits)
   *(ctx->block+57) = (total_bits >> 48) & 0xFF;
   *(ctx->block+58) = (total_bits >> 40) & 0xFF;
