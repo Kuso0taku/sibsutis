@@ -40,7 +40,7 @@ static void calc_init_hash(uint32_t H[8]) {
 }
 
 // calculate round constants
-static void calc_init_hash(uint32_t K[64]) {
+static void calc_round_consts(uint32_t K[64]) {
   for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(sqrt((double)*(primes_64+i)));
 }
 
@@ -87,4 +87,24 @@ static void sha256_transform(SHA256_CTX* ctx) {
 
   // add result to state 
   for (size_t i=0; i<8; i++) *(ctx->state+i) += *(r+i);
+}
+
+// initialize constants 
+void sha256_init(SHA256_CTX* ctx) {
+  static _Bool constants_ready = 0;
+  static uint32_t H[8];
+  static uint32_t K[64];
+
+  if (!constants_ready) {
+    calc_init_hash(H);
+    calc_round_consts(K);
+    constants_ready = 1;
+  }
+  
+  // change constants in non-initialized context
+  memcpy(ctx->H, H, sizeof(H));
+  memcpy(ctx->K, K, sizeof(K));
+  memcpy(ctx->state, ctx->H, sizeof(ctx->H)); // init state = H
+  ctx->datalen = 0;
+  ctx->bitlen = 0;
 }
