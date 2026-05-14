@@ -135,18 +135,18 @@ void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
   }
   
   // add 0s before 56th byte 
-  while (i < 56) *(ctx->block + i++) = 0x00; // 0x00 = 0...0
+  while (i < 56) *(ctx->block + i++) = 0x00; // 0x00 = 0...0 (8 bits)
   
   // full message length in bytes (big-endian)
   uint64_t total_bits = ctx->bitlen + (uint64_t)(ctx->datalen) * 8;
-  *(ctx->block+56) = (total_bits >> 56) && 0xFF; // 0xFF = 1...1
-  *(ctx->block+57) = (total_bits >> 48) && 0xFF;
-  *(ctx->block+58) = (total_bits >> 40) && 0xFF;
-  *(ctx->block+59) = (total_bits >> 32) && 0xFF;
-  *(ctx->block+60) = (total_bits >> 24) && 0xFF;
-  *(ctx->block+61) = (total_bits >> 16) && 0xFF;
-  *(ctx->block+62) = (total_bits >>  8) && 0xFF;
-  *(ctx->block+63) = total_bits         && 0xFF;
+  *(ctx->block+56) = (total_bits >> 56) & 0xFF; // 0xFF = 1...1 (8 bits)
+  *(ctx->block+57) = (total_bits >> 48) & 0xFF;
+  *(ctx->block+58) = (total_bits >> 40) & 0xFF;
+  *(ctx->block+59) = (total_bits >> 32) & 0xFF;
+  *(ctx->block+60) = (total_bits >> 24) & 0xFF;
+  *(ctx->block+61) = (total_bits >> 16) & 0xFF;
+  *(ctx->block+62) = (total_bits >>  8) & 0xFF;
+  *(ctx->block+63) = total_bits         & 0xFF;
 
   sha256_transform(ctx);
 
@@ -155,7 +155,7 @@ void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
     *(hash + i*4 + 0) = (*(ctx->state + i) >> 24) & 0xFF;
     *(hash + i*4 + 1) = (*(ctx->state + i) >> 16) & 0xFF;
     *(hash + i*4 + 2) = (*(ctx->state + i) >>  8) & 0xFF;
-    *(hash + i*4 + 3) = *(ctx->state + i)         & 0xFF;
+    *(hash + i*4 + 3) =  *(ctx->state + i)        & 0xFF;
   }
 }
 
