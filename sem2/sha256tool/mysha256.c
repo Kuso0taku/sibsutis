@@ -89,7 +89,7 @@ static void sha256_transform(SHA256_CTX* ctx) {
   for (size_t i=0; i<8; i++) *(ctx->state+i) += *(r+i);
 }
 
-// initialize constants 
+// context init (calculate H and K firt time)
 void sha256_init(SHA256_CTX* ctx) {
   static _Bool constants_ready = 0;
   static uint32_t H[8];
@@ -107,4 +107,16 @@ void sha256_init(SHA256_CTX* ctx) {
   memcpy(ctx->state, ctx->H, sizeof(ctx->H)); // init state = H
   ctx->datalen = 0;
   ctx->bitlen = 0;
+}
+
+// give a part of data 
+void sha256_update(SHA256_CTX* ctx, const uint8_t* data, size_t len) {
+  for (size_t i=0; i<len; i++) {
+    *(ctx->block + ctx->datalen++) = *(data+i);
+    if (ctx->datalen == 64) {
+      sha256_transform(ctx);
+      ctx->bitlen += 512;
+      ctx->datalen = 0;
+    }
+  }
 }
