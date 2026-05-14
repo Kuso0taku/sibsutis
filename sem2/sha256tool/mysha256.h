@@ -11,7 +11,7 @@ typedef struct {
   uint32_t state[8];   // current hash (32 * 8 = 256 bits)
   uint32_t H[8];       // init values
   uint32_t K[64];      // round constants
-} SHA256_CTX
+} SHA256_CTX;
 
 // context init (calculate H and K firt time)
 void sha256_init(SHA256_CTX* ctx);

@@ -15,7 +15,7 @@
 #define sigma1(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ ((x) >> 10))
 
 // first 64 prime numbers (for K)
-static const unsigned uint16_t prime_64[] = {
+static const uint16_t prime_64[] = {
   2,   3,   5,   7,   11,  13,  17,  19,
   23,  29,  31,  37,  41,  43,  47,  53,
   59,  61,  67,  71,  73,  79,  83,  89,
@@ -24,24 +24,24 @@ static const unsigned uint16_t prime_64[] = {
   179, 181, 191, 193, 197, 199, 211, 223,
   227, 229, 233, 239, 241, 251, 257, 263,
   269, 271, 277, 281, 283, 293, 307, 311
-}
+};
 
 // get first 32bits of fractional part
 static uint32_t fractional_bits(double value) {
-  double int;
-  double frac = modf(value, &int); // int = int part, frac = frac part
+  double int_part;
+  double frac = modf(value, &int_part); // frac = frac part
   double scaled = frac * pow(2, 32); // get first 32 bits 
   return (uint32_t)scaled;
 }
 
 // calculate init values of hash
 static void calc_init_hash(uint32_t H[8]) {
-  for (size_t i=0; i<8; i++) *(H+i) = fractional_bits(sqrt((double)*(primes_64+i)));
+  for (size_t i=0; i<8; i++) *(H+i) = fractional_bits(sqrt((double)*(prime_64+i)));
 }
 
 // calculate round constants
 static void calc_round_consts(uint32_t K[64]) {
-  for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(sqrt((double)*(primes_64+i)));
+  for (size_t i=0; i<64; i++) *(K+i) = fractional_bits(sqrt((double)*(prime_64+i)));
 }
 
 // handle one 512-bits block 
@@ -53,7 +53,7 @@ static void sha256_transform(SHA256_CTX* ctx) {
     *(W+i) = ((uint32_t)*(ctx->block+j)   << 24) |
              ((uint32_t)*(ctx->block+j+1) << 16) |
              ((uint32_t)*(ctx->block+j+2) << 8) |
-             ((uint32_t)*(ctx->block+j+3))
+             ((uint32_t)*(ctx->block+j+3));
   }
 
   // expand schedule 
