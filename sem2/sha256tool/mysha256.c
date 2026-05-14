@@ -158,3 +158,20 @@ void sha256_final(SHA256_CTX* ctx, uint8_t hash[32]) {
     *(hash + i*4 + 3) = *(ctx->state + i)         & 0xFF;
   }
 }
+
+// calculate full sha256 for file (0=ok, 1=error)
+int sha256_file(const char* filename, uint8_t hash[32]) {
+  FILE* f = fopen(filename, "rb");
+  if (!f) return -1;
+
+  SHA256_CTX ctx;
+  sha256_init(&ctx);
+
+  uint8_t buf[32*1024]; // 32 bytes
+  size_t n;
+  while ((n = fread(buf, 1, sizeof(buf), f)) > 0) sha256_update(&ctx, buf, n);
+
+  sha256_final(&ctx, hash);
+  fclose(f);
+  return 0;
+}
