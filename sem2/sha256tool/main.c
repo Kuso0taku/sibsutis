@@ -173,6 +173,66 @@ int main(int argc, char** argv) {
     printf("Saved to %s\n", subpath);
     closedir(dir);
   }
+  else if (m == CHECK_DIR) {
+    char subpath[strlen(path) + 8];
+    snprintf(subpath, sizeof(subpath), "%s.sha256", path);
+
+    FILE* f = fopen(subpath, "r");
+    if (!f) {
+      perror("Can't find checksum file");
+      return 1;
+    }
+
+    char saved_hex[65];
+    _Bool has_error = 0;
+
+    while (fscanf(f, "%64s", saved_hex) == 1) {
+      char ch = fgetc(f); // space
+      if (ch != ' ') {
+        fprintf(stderr, "Missing space after hash\n");
+        fclose(f);
+        return 1;
+      }
+
+      char filename[1024];
+      size_t i = 0;
+      while ((ch = fgetc(f)) != '\n' && ch != EOF) {
+        if (i >= sizeof(filename) - 1) {
+          fprintf(stderr, "Filename too long in checksum file\n");
+          fclose(f);
+          return 1;
+        }
+        filename[i++] = ch;
+      }
+      filename[i] = '\0';
+
+      if (i == 0) {
+        fprintf(stderr, "Empty filename in checksum file\n");
+        fclose(f);
+        return 1;
+      }
+
+      uint8_t hash[32];
+      if (sha256_file(filename, hash) != 0) {
+        printf("%s: FAIL (cannot read)\n", filename);
+        has_error = 1;
+        continue;
+      }
+
+      char cur_hex[65];
+      hash_to_hex(hash, cur_hex);
+
+      if (strcmp(cur_hex, saved_hex) == 0) {
+        printf("%s: OK\n", filename);
+      } else {
+        printf("%s: FAIL\n", filename);
+        has_error = 1;
+      }
+    }
+
+    fclose(f);
+    return has_error ? 1 : 0;
+  }
   else {
     usage();
     return 1;
