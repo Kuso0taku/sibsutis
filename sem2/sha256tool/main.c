@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>   // to work with dirs 
+#include <sys/stat.h> // to check if it's a regular file
 #include "mysha256.h"
 
 // convert hash to hex string
@@ -11,13 +13,15 @@ static void hash_to_hex(const uint8_t hash[32], char hex[65]) {
 // give a usage/help to user 
 static void usage(void) {
   printf("Usage:\n\t");
-  printf("sha256tool <create|check> <path>\n");
+  printf("sha256tool <create|check|create-dir|check-dir> <path>\n");
 }
 
 // enum for modes
 typedef enum {
   CREATE,
-  CHECK
+  CHECK,
+  CREATE_DIR,
+  CHECK_DIR
 } Mode;
 
 int main(int argc, char** argv) {
@@ -31,22 +35,25 @@ int main(int argc, char** argv) {
   Mode m;
   if (!strcmp(mode, "create")) m = CREATE;
   else if (!strcmp(mode, "check")) m = CHECK;
+  else if (!strcmp(mode, "create-dir")) m = CREATE_DIR;
+  else if (!strcmp(mode, "check-dir")) m = CHECK_DIR;
   else {
     usage();
     return 1;
   }
   
   // calc file hash
+  char cur_hex[65];
   const char* path = *(argv+2);
   uint8_t hash[32];
-  if (sha256_file(path, hash)) {
-    perror("Reading file error");
-    return 1;
+  if (m < CREATE_DIR) {
+    if (sha256_file(path, hash)) {
+      perror("Reading file error");
+      return 1;
+    }
+    // convert hash to hex string
+    hash_to_hex(hash, cur_hex);
   }
-  
-  // convert hash to hex string
-  char cur_hex[65];
-  hash_to_hex(hash, cur_hex);
 
   if (m == CREATE) {
     char subpath[strlen(path) + 8]; // + ".sha256" + 1
@@ -114,6 +121,57 @@ int main(int argc, char** argv) {
       printf("Calculated: %s\n", cur_hex);
       return 1;
     }
+  }
+  else if (m == CREATE_DIR) {
+    DIR* dir = opendir(path);
+    if (!dir) {
+      perror("Error opening directory");
+      return 1;
+    }
+
+    char subpath[strlen(path) + 8];
+    snprintf(subpath, sizeof(subpath), "%s.sha256", path);
+
+    FILE* f = fopen(subpath, "w");
+    if (!f) {
+      perror("Can't create sha256 sum file");
+      return 1;
+    }
+
+    struct dirent* entry;
+    struct stat file_stat;
+    char full_path[1024];
+
+    while ((entry = readdir(dir))) {
+      // skip "." and ".." shortcuts and .sha256 file
+      if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..") || 
+          !strcmp(entry->d_name, subpath)) 
+        continue;
+
+      snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+      
+      // get file metadata
+      if (stat(full_path, &file_stat) == -1) {
+        perror("Error running stat");
+        continue;
+      }
+
+      // check if entry is a regular file 
+      if (S_ISREG(file_stat.st_mode)) {
+        // compute hash
+        if (sha256_file(full_path, hash)) {
+          perror("Reading file error");
+          return 1;
+        }
+        hash_to_hex(hash, cur_hex);
+    
+        fprintf(f, "%s %s\n", cur_hex, full_path);
+      }
+    
+    }
+    fclose(f);
+    printf("Saved to %s\n", subpath);
+    closedir(dir);
   }
   else {
     usage();
